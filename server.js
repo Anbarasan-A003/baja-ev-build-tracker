@@ -286,7 +286,14 @@ app.get('/api/export', (req, res) => {
 });
 
 // ----------------------
-// START SERVER (Railway-compatible)
+// FRONTEND FALLBACK (IMPORTANT FOR RAILWAY)
+// ----------------------
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+// ----------------------
+// START SERVER
 // ----------------------
 const PORT = process.env.PORT || 3000;
 

@@ -1,4 +1,4 @@
-// server.js - Final Railway Compatible Version
+// server.js - Final Secure Railway-Compatible Version
 const express = require("express");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
@@ -17,14 +17,12 @@ const DATA_FILE = path.join(__dirname, "data.json");
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const SESSION_DIR = "/app/.sessions";
 
-// Ensure session folder
+// Ensure folders exist
 if (!fs.existsSync(SESSION_DIR)) fs.mkdirSync(SESSION_DIR, { recursive: true });
-
-// Ensure upload folder
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // ----------------------
-// Default demo users
+// Default Users
 // ----------------------
 const defaultUsers = [
   { username: "captain", password: "captain123", name: "Team Captain", role: "captain" },
@@ -34,7 +32,7 @@ const defaultUsers = [
 ];
 
 // ----------------------
-// DB File Management
+// Data File Handling
 // ----------------------
 function ensureDataFile() {
   if (!fs.existsSync(DATA_FILE)) {
@@ -50,15 +48,14 @@ function ensureDataFile() {
   try {
     const content = JSON.parse(fs.readFileSync(DATA_FILE, "utf8") || "{}");
 
-    if (!content.entries) content.entries = [];
-    if (!content.users) content.users = defaultUsers;
-    if (!content.project)
-      content.project = { name: "Phenix Racing - EV", createdAt: new Date().toISOString() };
+    content.entries ||= [];
+    content.users ||= defaultUsers;
+    content.project ||= { name: "Phenix Racing - EV", createdAt: new Date().toISOString() };
 
     fs.writeFileSync(DATA_FILE, JSON.stringify(content, null, 2));
     return content;
   } catch (err) {
-    console.error("Bad data.json, rebuilding:", err);
+    console.error("Bad data.json - resetting:", err);
     const init = {
       project: { name: "Phenix Racing - EV", createdAt: new Date().toISOString() },
       entries: [],
@@ -90,8 +87,8 @@ app.use(
   session({
     store: new FileStore({
       path: SESSION_DIR,
-      retries: 1,
-      ttl: 86400
+      ttl: 86400,
+      retries: 1
     }),
     secret: "phenix-racing-secret-2025",
     resave: false,
@@ -105,7 +102,17 @@ app.use(
 );
 
 // ----------------------
-// Multer Upload
+// Auth Middleware
+// ----------------------
+function requireLogin(req, res, next) {
+  if (!req.session?.user)
+    return res.status(401).json({ ok: false, error: "not_authenticated" });
+
+  next();
+}
+
+// ----------------------
+// File Uploads
 // ----------------------
 const upload = multer({
   storage: multer.diskStorage({
@@ -117,22 +124,10 @@ const upload = multer({
 });
 
 // ----------------------
-// Auth Middleware
-// ----------------------
-function requireLogin(req, res, next) {
-  if (!req.session?.user)
-    return res.status(401).json({ ok: false, error: "not_authenticated" });
-  next();
-}
-
-// ----------------------
 // API Routes
 // ----------------------
-app.get("/api/ping", (req, res) =>
-  res.json({ ok: true, time: new Date().toISOString() })
-);
+app.get("/api/ping", (_, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
-// Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password)
@@ -152,7 +147,6 @@ app.post("/api/login", (req, res) => {
   res.json({ ok: true, user: req.session.user });
 });
 
-// Logout
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
@@ -162,8 +156,10 @@ app.get("/api/whoami", (req, res) => {
   res.json({ ok: true, user: req.session.user || null });
 });
 
-// Get full state
-app.get("/api/state", (_, res) => res.json(readData()));
+// SECURED full state
+app.get("/api/state", requireLogin, (req, res) => {
+  res.json(readData());
+});
 
 // Create entry
 app.post("/api/entry", requireLogin, (req, res) => {
@@ -199,12 +195,14 @@ app.post("/api/entry", requireLogin, (req, res) => {
 app.put("/api/entry/:id", requireLogin, (req, res) => {
   const id = Number(req.params.id);
   const db = readData();
-  const entry = db.entries.find(e => Number(e.id) === id);
+  const entry = db.entries.find(e => e.id === id);
 
   if (!entry) return res.status(404).json({ ok: false, error: "not_found" });
 
   const user = req.session.user;
-  if (user.role !== "captain" && user.username !== entry.assignee)
+  const canEdit = user.role === "captain" || user.username === entry.assignee;
+
+  if (!canEdit)
     return res.status(403).json({ ok: false, error: "forbidden" });
 
   Object.assign(entry, {
@@ -225,15 +223,16 @@ app.put("/api/entry/:id", requireLogin, (req, res) => {
   }
 
   entry.updatedAt = new Date().toISOString();
-
   writeData(db);
+
   res.json({ ok: true, entry });
 });
 
 // Delete entry
 app.delete("/api/entry/:id", requireLogin, (req, res) => {
+  const id = Number(req.params.id);
   const db = readData();
-  db.entries = db.entries.filter(e => Number(e.id) !== Number(req.params.id));
+  db.entries = db.entries.filter(e => e.id !== id);
   writeData(db);
   res.json({ ok: true });
 });
@@ -241,23 +240,22 @@ app.delete("/api/entry/:id", requireLogin, (req, res) => {
 // Upload image
 app.post("/api/upload", requireLogin, upload.single("image"), (req, res) => {
   if (!req.file) return res.status(400).json({ ok: false, error: "no_file" });
+
   res.json({ ok: true, url: "/uploads/" + path.basename(req.file.path) });
 });
 
 app.use("/uploads", express.static(UPLOAD_DIR));
 
 // Export JSON
-app.get("/api/export", (_, res) => res.download(DATA_FILE));
+app.get("/api/export", requireLogin, (_, res) => {
+  res.download(DATA_FILE);
+});
 
-// ----------------------
-// SPA Fallback (Required for Railway)
-// ----------------------
+// SPA fallback
 app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
 
-// ----------------------
-// Start Server
-// ----------------------
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port " + PORT));

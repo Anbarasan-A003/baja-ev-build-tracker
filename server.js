@@ -1,4 +1,4 @@
-// server.js - fully fixed version
+// server.js - fully fixed Railway-compatible version
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -10,13 +10,10 @@ const multer = require('multer');
 const app = express();
 
 // ----------------------
-// Configurable
+// Configurable (Railway-safe)
 // ----------------------
-const BASE_PORT = Number(process.env.PORT) || 3000;
-const MAX_PORT_TRIES = 11; // try 3000..3010
 const DATA_FILE = "/app/data.json";
 const UPLOAD_DIR = "/app/uploads";
-
 
 // ----------------------
 // Default users (demo)
@@ -205,7 +202,7 @@ app.post('/api/entry', requireLogin, (req, res) => {
 });
 
 // ----------------------
-// UPDATE ENTRY  (FULL FIX APPLIED HERE)
+// UPDATE ENTRY
 // ----------------------
 app.put('/api/entry/:id', requireLogin, (req, res) => {
   try {
@@ -218,12 +215,10 @@ app.put('/api/entry/:id', requireLogin, (req, res) => {
 
     const user = req.session.user;
 
-    // Simple access control
     if (!(user.role === 'captain' || user.username === entry.assignee)) {
       return res.status(403).json({ ok: false, error: 'forbidden' });
     }
 
-    // Apply ALL fields correctly
     if (req.body.section !== undefined) entry.section = req.body.section;
     if (req.body.title !== undefined) entry.title = req.body.title;
     if (req.body.description !== undefined) entry.description = req.body.description;
@@ -291,29 +286,10 @@ app.get('/api/export', (req, res) => {
 });
 
 // ----------------------
-// Start server
+// START SERVER (Railway-compatible)
 // ----------------------
-(async function start() {
-  for (let i = 0; i < MAX_PORT_TRIES; i++) {
-    const port = BASE_PORT + i;
+const PORT = process.env.PORT || 3000;
 
-    try {
-      await new Promise((resolve, reject) => {
-        const srv = app.listen(port, () => {
-          console.log(`Server running on http://localhost:${port}`);
-          resolve();
-        });
-        srv.on('error', reject);
-      });
-      break;
-
-    } catch (err) {
-      if (err.code === 'EADDRINUSE') {
-        console.warn(`Port ${port} in use, trying next...`);
-        continue;
-      }
-      console.error('Server start error', err);
-      process.exit(1);
-    }
-  }
-})();
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});

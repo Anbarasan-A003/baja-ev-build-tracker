@@ -1,4 +1,4 @@
-// server.js - fully fixed Railway-compatible version
+// server.js - Fully fixed Railway-compatible version
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -16,22 +16,22 @@ const DATA_FILE = "/app/data.json";
 const UPLOAD_DIR = "/app/uploads";
 
 // ----------------------
-// Default users (demo)
+// Default users
 // ----------------------
 const defaultUsers = [
   { username: 'captain', password: 'captain123', name: 'Team Captain', role: 'captain' },
-  { username: 'elec',    password: 'elec123',    name: 'Electrical Lead', role: 'electrical' },
-  { username: 'mech',    password: 'mech123',    name: 'Mechanical Lead', role: 'mechanical' },
-  { username: 'driver',  password: 'driver123',  name: 'Driver', role: 'driver' }
+  { username: 'elec', password: 'elec123', name: 'Electrical Lead', role: 'electrical' },
+  { username: 'mech', password: 'mech123', name: 'Mechanical Lead', role: 'mechanical' },
+  { username: 'driver', password: 'driver123', name: 'Driver', role: 'driver' }
 ];
 
 // ----------------------
-// Helpers: read/write DB
+// Helpers
 // ----------------------
 function ensureDataFile() {
   if (!fs.existsSync(DATA_FILE)) {
     const initial = {
-      project: { name: 'Phenix Racing - EV', createdAt: new Date().toISOString() },
+      project: { name: "Phenix Racing - EV", createdAt: new Date().toISOString() },
       entries: [],
       users: defaultUsers
     };
@@ -40,21 +40,20 @@ function ensureDataFile() {
   }
 
   try {
-    const raw = fs.readFileSync(DATA_FILE, 'utf8') || '{}';
+    const raw = fs.readFileSync(DATA_FILE, 'utf8') || "{}";
     const parsed = JSON.parse(raw);
 
     if (!parsed.entries) parsed.entries = [];
     if (!parsed.users) parsed.users = defaultUsers;
     if (!parsed.project)
-      parsed.project = { name: 'Phenix Racing - EV', createdAt: new Date().toISOString() };
+      parsed.project = { name: "Phenix Racing - EV", createdAt: new Date().toISOString() };
 
     fs.writeFileSync(DATA_FILE, JSON.stringify(parsed, null, 2));
     return parsed;
-
   } catch (err) {
-    console.error('Failed to read data.json - recreating:', err);
+    console.error("Failed to read data.json, recreating:", err);
     const initial = {
-      project: { name: 'Phenix Racing - EV', createdAt: new Date().toISOString() },
+      project: { name: "Phenix Racing - EV", createdAt: new Date().toISOString() },
       entries: [],
       users: defaultUsers
     };
@@ -64,8 +63,9 @@ function ensureDataFile() {
 }
 
 function readData() {
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 }
+
 function writeData(obj) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(obj, null, 2));
 }
@@ -77,21 +77,23 @@ ensureDataFile();
 // ----------------------
 app.use(cors());
 app.use(bodyParser.json({ limit: '5mb' }));
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, "frontend"))); // serve frontend folder
 
-app.use(session({
-  secret: 'phenix-racing-secret-2025',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax',
-    secure: false
-  }
-}));
+app.use(
+  session({
+    secret: "phenix-racing-secret-2025",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "lax",
+      secure: false
+    }
+  })
+);
 
 // ----------------------
-// Multer Upload
+// File Uploads
 // ----------------------
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -99,7 +101,7 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, UPLOAD_DIR),
     filename: (req, file, cb) =>
-      cb(null, Date.now().toString(36) + '-' + file.originalname.replace(/\s+/g, '_'))
+      cb(null, Date.now().toString(36) + "-" + file.originalname.replace(/\s+/g, "_"))
   }),
   limits: { fileSize: 5 * 1024 * 1024 }
 });
@@ -109,28 +111,28 @@ const upload = multer({
 // ----------------------
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.user)
-    return res.status(401).json({ ok: false, error: 'not_authenticated' });
+    return res.status(401).json({ ok: false, error: "not_authenticated" });
   next();
 }
 
 // ----------------------
 // Routes
 // ----------------------
-app.get('/api/ping', (req, res) =>
-  res.json({ ok: true, t: new Date().toISOString() })
-);
+app.get("/api/ping", (req, res) => res.json({ ok: true, t: new Date().toISOString() }));
 
-app.post('/api/login', (req, res) => {
+app.post("/api/login", (req, res) => {
   try {
     const { username, password } = req.body || {};
     if (!username || !password)
-      return res.status(400).json({ ok: false, error: 'missing_credentials' });
+      return res.status(400).json({ ok: false, error: "missing_credentials" });
 
     const db = readData();
-    const user = db.users.find(u => u.username === username && u.password === password);
+    const user = db.users.find(
+      u => u.username === username && u.password === password
+    );
 
     if (!user)
-      return res.status(401).json({ ok: false, error: 'invalid_credentials' });
+      return res.status(401).json({ ok: false, error: "invalid_credentials" });
 
     req.session.user = {
       username: user.username,
@@ -138,35 +140,33 @@ app.post('/api/login', (req, res) => {
       role: user.role
     };
 
-    return res.json({ ok: true, user: req.session.user });
-
+    res.json({ ok: true, user: req.session.user });
   } catch (err) {
-    console.error('login error', err);
-    res.status(500).json({ ok: false, error: 'server_error' });
+    console.error("login error:", err);
+    res.status(500).json({ ok: false, error: "server_error" });
   }
 });
 
-app.post('/api/logout', (req, res) => {
+app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
-app.get('/api/whoami', (req, res) => {
+app.get("/api/whoami", (req, res) => {
   res.json({ ok: true, user: req.session.user || null });
 });
 
-app.get('/api/state', (req, res) => {
-  const db = readData();
-  res.json(db);
+app.get("/api/state", (req, res) => {
+  res.json(readData());
 });
 
 // ----------------------
 // CREATE ENTRY
 // ----------------------
-app.post('/api/entry', requireLogin, (req, res) => {
+app.post("/api/entry", requireLogin, (req, res) => {
   try {
     const { section, title } = req.body;
     if (!section || !title)
-      return res.status(400).json({ ok: false, error: 'section_title_required' });
+      return res.status(400).json({ ok: false, error: "section_title_required" });
 
     const db = readData();
 
@@ -174,17 +174,14 @@ app.post('/api/entry', requireLogin, (req, res) => {
       id: Date.now(),
       section,
       title,
-      description: req.body.description || '',
+      description: req.body.description || "",
       assignee: req.body.assignee || req.session.user.username,
-      status: req.body.status || 'Pending',
+      status: req.body.status || "Pending",
       percent: Number(req.body.percent || 0),
       amount: Number(req.body.amount || 0),
       images: Array.isArray(req.body.images) ? req.body.images : [],
       timeline: [
-        {
-          ts: new Date().toISOString(),
-          note: `Created by ${req.session.user.username}`
-        }
+        { ts: new Date().toISOString(), note: `Created by ${req.session.user.username}` }
       ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -194,31 +191,30 @@ app.post('/api/entry', requireLogin, (req, res) => {
     writeData(db);
 
     res.json({ ok: true, entry });
-
   } catch (err) {
-    console.error('add entry error', err);
-    res.status(500).json({ ok: false, error: 'server_error' });
+    console.error("entry error:", err);
+    res.status(500).json({ ok: false, error: "server_error" });
   }
 });
 
 // ----------------------
 // UPDATE ENTRY
 // ----------------------
-app.put('/api/entry/:id', requireLogin, (req, res) => {
+app.put("/api/entry/:id", requireLogin, (req, res) => {
   try {
     const id = Number(req.params.id);
     const db = readData();
     const entry = db.entries.find(e => Number(e.id) === id);
 
     if (!entry)
-      return res.status(404).json({ ok: false, error: 'not_found' });
+      return res.status(404).json({ ok: false, error: "not_found" });
 
     const user = req.session.user;
 
-    if (!(user.role === 'captain' || user.username === entry.assignee)) {
-      return res.status(403).json({ ok: false, error: 'forbidden' });
-    }
+    if (!(user.role === "captain" || user.username === entry.assignee))
+      return res.status(403).json({ ok: false, error: "forbidden" });
 
+    // Apply updates
     if (req.body.section !== undefined) entry.section = req.body.section;
     if (req.body.title !== undefined) entry.title = req.body.title;
     if (req.body.description !== undefined) entry.description = req.body.description;
@@ -235,25 +231,24 @@ app.put('/api/entry/:id', requireLogin, (req, res) => {
     }
 
     entry.updatedAt = new Date().toISOString();
-
     writeData(db);
-    res.json({ ok: true, entry });
 
+    res.json({ ok: true, entry });
   } catch (err) {
-    console.error('update error', err);
-    res.status(500).json({ ok: false, error: 'server_error' });
+    console.error("update error:", err);
+    res.status(500).json({ ok: false, error: "server_error" });
   }
 });
 
 // ----------------------
 // DELETE ENTRY
 // ----------------------
-app.delete('/api/entry/:id', requireLogin, (req, res) => {
+app.delete("/api/entry/:id", requireLogin, (req, res) => {
   try {
     const user = req.session.user;
 
-    if (user.role !== 'captain')
-      return res.status(403).json({ ok: false, error: 'forbidden' });
+    if (user.role !== "captain")
+      return res.status(403).json({ ok: false, error: "forbidden" });
 
     const id = Number(req.params.id);
     const db = readData();
@@ -262,34 +257,36 @@ app.delete('/api/entry/:id', requireLogin, (req, res) => {
     writeData(db);
 
     res.json({ ok: true });
-
   } catch (err) {
-    console.error('delete error', err);
-    res.status(500).json({ ok: false, error: 'server_error' });
+    console.error("delete error:", err);
+    res.status(500).json({ ok: false, error: "server_error" });
   }
 });
 
 // ----------------------
 // Uploads
 // ----------------------
-app.post('/api/upload', requireLogin, upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ ok: false, error: 'no_file' });
+app.post("/api/upload", requireLogin, upload.single("image"), (req, res) => {
+  if (!req.file) return res.status(400).json({ ok: false, error: "no_file" });
 
-  const url = '/uploads/' + path.basename(req.file.path);
+  const url = "/uploads/" + path.basename(req.file.path);
   res.json({ ok: true, url });
 });
 
-app.use('/uploads', express.static(UPLOAD_DIR));
+app.use("/uploads", express.static(UPLOAD_DIR));
 
-app.get('/api/export', (req, res) => {
+// ----------------------
+// Export
+// ----------------------
+app.get("/api/export", (req, res) => {
   res.download(DATA_FILE);
 });
 
 // ----------------------
 // FRONTEND FALLBACK (IMPORTANT FOR RAILWAY)
 // ----------------------
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
 
 // ----------------------

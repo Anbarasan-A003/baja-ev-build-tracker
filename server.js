@@ -13,8 +13,8 @@ const app = express();
 // ----------------------
 // Railway-safe Paths
 // ----------------------
-const DATA_FILE = "/app/data.json";
-const UPLOAD_DIR = "/app/uploads";
+const DATA_FILE = path.join(__dirname, "data.json");
+const UPLOAD_DIR = path.join(__dirname, "uploads");
 const SESSION_DIR = "/app/.sessions";
 
 // Ensure session folder

@@ -1,0 +1,26 @@
+[
+  {
+    "username": "captain",
+    "password": "captain123",
+    "role": "captain",
+    "name": "Team Captain"
+  },
+  {
+    "username": "elec",
+    "password": "elec123",
+    "role": "electrical",
+    "name": "Electrical Lead"
+  },
+  {
+    "username": "mech",
+    "password": "mech123",
+    "role": "mechanical",
+    "name": "Mechanical Lead"
+  },
+  {
+    "username": "driver",
+    "password": "driver123",
+    "role": "driver",
+    "name": "Driver"
+  }
+]

@@ -1,0 +1,240 @@
+/* -------------------------------------------------
+   GLOBAL – Premium EV Engineering Theme
+------------------------------------------------- */
+* { box-sizing: border-box; }
+
+body {
+  font-family: Inter, system-ui, Segoe UI, Arial;
+  margin: 0;
+  background: #0A0F1A; /* Deep navy */
+  color: #E8F1F8;
+}
+
+/* Premium Accent Variables */
+:root {
+  --primary: #00D1C7;  /* Electric Teal */
+  --secondary: #76FFDA; /* Soft Mint */
+  --accent: #FF8A3D;    /* Premium Orange */
+  --border: rgba(255,255,255,0.08);
+  --card-bg: rgba(255,255,255,0.04);
+}
+
+/* -------------------------------------------------
+   CONTAINER
+------------------------------------------------- */
+.app {
+  max-width: 1450px;
+  margin: 26px auto;
+  padding: 18px;
+}
+
+/* -------------------------------------------------
+   HEADER – Simple, Clean, Professional
+------------------------------------------------- */
+header {
+  display: flex;
+  align-items: center;
+  padding: 18px 22px;
+
+  border-radius: 12px;
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--primary);
+}
+
+h1 {
+  margin: 0;
+  font-weight: 800;
+  font-size: 23px;
+
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.small { color: #92A6B8; }
+
+/* -------------------------------------------------
+   GRID LAYOUT
+------------------------------------------------- */
+.grid3 {
+  display: grid;
+  grid-template-columns: 360px 360px 1fr;
+  gap: 20px;
+}
+
+/* -------------------------------------------------
+   CARD – Clean Premium
+------------------------------------------------- */
+.card {
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: 0.22s;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(0,209,199,0.12);
+}
+
+/* -------------------------------------------------
+   FORM ELEMENTS
+------------------------------------------------- */
+label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #DCE6EF;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #E8F1F8;
+  transition: 0.25s;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(0,209,199,0.25);
+  outline: none;
+}
+
+textarea { height: 110px; resize: vertical; }
+
+/* -------------------------------------------------
+   BUTTONS – Premium Accent Orange
+------------------------------------------------- */
+button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+
+  font-weight: 700;
+  color: #0A0F1A;
+
+  background: var(--accent);
+  transition: 0.25s ease;
+}
+
+button:hover {
+  background: #FF9B57;
+  box-shadow: 0 4px 14px rgba(255,138,61,0.28);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* -------------------------------------------------
+   DASHBOARD
+------------------------------------------------- */
+.dashCard h3 {
+  margin: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* -------------------------------------------------
+   PROGRESS BAR
+------------------------------------------------- */
+.progressOuter {
+  background: rgba(255,255,255,0.07);
+  height: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progressInner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.4s ease;
+}
+
+/* -------------------------------------------------
+   TIMELINE
+------------------------------------------------- */
+.timelineItem {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border-left: 4px solid var(--primary);
+  margin-bottom: 12px;
+}
+
+.timelineItem:hover {
+  border-left-color: var(--secondary);
+}
+
+.timelineItem .time {
+  font-size: 12px;
+  color: #9FB3C1;
+}
+
+/* -------------------------------------------------
+   ENTRY CARDS
+------------------------------------------------- */
+.entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+
+  transition: 0.22s ease;
+}
+
+.entry:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 18px rgba(0,209,199,0.22);
+}
+
+.entry img.thumb {
+  max-width: 130px;
+  border-radius: 6px;
+}
+
+/* -------------------------------------------------
+   PURCHASE MANAGER
+------------------------------------------------- */
+.pmItem {
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: 0.25s ease;
+}
+
+.pmItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 16px rgba(0,209,199,0.22);
+}
+
+.pmTitle {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.pmAmount {
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* -------------------------------------------------
+   MODAL
+------------------------------------------------- */
+.modalCard {
+  background: #0E1724;
+  padding: 22px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,209,199,0.35);
+}

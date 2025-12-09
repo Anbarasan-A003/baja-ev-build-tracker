@@ -1,0 +1,114 @@
+{
+  "project": {
+    "name": "Phenix Racing - EV",
+    "createdAt": "2025-12-08T05:59:40.232Z"
+  },
+  "entries": [
+    {
+      "id": 1765187452520,
+      "section": "Chassis",
+      "title": "Paint",
+      "description": "",
+      "assignee": "captain",
+      "percent": 100,
+      "status": "Done",
+      "amount": 510,
+      "images": [],
+      "timeline": [
+        {
+          "ts": "2025-12-08T09:50:52.520Z",
+          "note": "Created by captain"
+        }
+      ],
+      "createdAt": "2025-12-08T09:50:52.520Z",
+      "updatedAt": "2025-12-08T09:50:52.520Z"
+    },
+    {
+      "id": 1765188003770,
+      "section": "Items to Purchase",
+      "title": "AR",
+      "description": "Relay",
+      "assignee": "Hari",
+      "percent": 0,
+      "status": "In Progress",
+      "amount": 4484,
+      "images": [],
+      "timeline": [
+        {
+          "ts": "2025-12-08T10:00:03.770Z",
+          "note": "Created by captain"
+        }
+      ],
+      "createdAt": "2025-12-08T10:00:03.770Z",
+      "updatedAt": "2025-12-08T10:00:03.770Z"
+    },
+    {
+      "id": 1765188338165,
+      "section": "Purchased Items",
+      "title": "asas",
+      "description": "",
+      "assignee": "elec",
+      "status": "Done",
+      "percent": 100,
+      "amount": 100,
+      "images": [],
+      "timeline": [
+        {
+          "ts": "2025-12-08T10:05:38.165Z",
+          "note": "Created by elec"
+        }
+      ],
+      "createdAt": "2025-12-08T10:05:38.165Z",
+      "updatedAt": "2025-12-08T10:05:38.165Z"
+    },
+    {
+      "id": 1765188360304,
+      "section": "Purchased Items",
+      "title": "efkjfb",
+      "description": "",
+      "assignee": "sdsd",
+      "status": "Done",
+      "percent": 100,
+      "amount": 1200,
+      "images": [],
+      "timeline": [
+        {
+          "ts": "2025-12-08T10:06:00.304Z",
+          "note": "Created by elec"
+        },
+        {
+          "ts": "2025-12-09T04:00:42.514Z",
+          "note": "Marked purchased (by captain)"
+        }
+      ],
+      "createdAt": "2025-12-08T10:06:00.304Z",
+      "updatedAt": "2025-12-09T04:00:42.514Z"
+    }
+  ],
+  "users": [
+    {
+      "username": "captain",
+      "password": "captain123",
+      "name": "Team Captain",
+      "role": "captain"
+    },
+    {
+      "username": "elec",
+      "password": "elec123",
+      "name": "Electrical Lead",
+      "role": "electrical"
+    },
+    {
+      "username": "mech",
+      "password": "mech123",
+      "name": "Mechanical Lead",
+      "role": "mechanical"
+    },
+    {
+      "username": "driver",
+      "password": "driver123",
+      "name": "Driver",
+      "role": "driver"
+    }
+  ]
+}
